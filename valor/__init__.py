@@ -1,1 +1,0 @@
-from .valor import Valor

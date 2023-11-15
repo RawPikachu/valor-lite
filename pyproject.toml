@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "valor-lite"
+version = "0.1.0"
+description = "Discord bot that offers useful features for Wynncraft."
+authors = ["Raw <102355977z@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+aiomysql = "^0.2.0"
+discord-py = "^2.3.2"
+python-dotenv = "^1.0.0"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.3"
+dpytest = "^0.7.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

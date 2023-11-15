@@ -1,7 +1,8 @@
 from enum import Enum
 import discord
-from valor import Valor
+from core import Valor
 from discord import app_commands
+
 
 async def extension(valor: Valor):
     group = app_commands.Group(name="extension", description="Commands for managing activated bot features")
@@ -42,6 +43,7 @@ async def extension(valor: Valor):
         await interaction.response.send_message(f"Loaded extensions: {extensions}")
 
     valor.tree.add_command(group)
+
 
 async def setup(valor: Valor):
     await extension(valor)
