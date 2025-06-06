@@ -20,19 +20,14 @@
 		"ghcr.io/devcontainers/features/github-cli:1": {},
 		"ghcr.io/devcontainers/features/python:1": {
 			"installTools": true,
+			"toolsToInstall": [
+				"black",
+				"flake8",
+				"isort"
+			],
 			"version": "3.12"
-		},
-		"ghcr.io/devcontainers-extra/features/black:2": {
-			"version": "latest"
-		},
-		"ghcr.io/devcontainers-extra/features/flake8:2": {
-			"version": "latest",
-			"plugins": "flake8-black"
-		},
-		"ghcr.io/devcontainers-extra/features/isort:2": {
-			"version": "latest"
 		}
-	}
+	},
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
@@ -42,9 +37,17 @@
 	// Uncomment the next line if you want to keep your containers running after VS Code shuts down.
 	// "shutdownAction": "none",
 	// Uncomment the next line to run commands after the container is created.
-	// "postCreateCommand": "cat /etc/os-release",
+	"postCreateCommand": "pip install --no-cache-dir -r bot/requirements.txt",
 	// Configure tool-specific properties.
-	// "customizations": {},
+	"customizations": {
+		"vscode": {
+            "extensions": [
+                "ms-python.isort",
+                "ms-python.flake8",
+                "ms-python.black-formatter"
+            ]
+        }
+	}
 	// Uncomment to connect as an existing user other than the container default. More info: https://aka.ms/dev-containers-non-root.
 	// "remoteUser": "devcontainer"
 }

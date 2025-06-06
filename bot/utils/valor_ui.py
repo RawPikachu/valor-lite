@@ -34,6 +34,7 @@ class PagedEmbedView(View):
             self.children[1].disabled = False
 
 
+# TODO: Broken fix later
 class AutoPagedEmbedView(PagedEmbedView):
     def __init__(self, content: str, timeout: int = 600):
         super().__init__([], timeout=timeout)

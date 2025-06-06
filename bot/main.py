@@ -6,24 +6,36 @@ from logging import handlers
 import discord
 from core import Valor
 from discord.ext import commands
+from discord.ext.commands.errors import ExtensionError
 from dotenv import load_dotenv
-from utils import ValorRequest
 
 load_dotenv()
 
 TEST_GUILD = os.getenv("TEST_GUILD")
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 
-EXTENSIONS = {
-    "commands.test_embed",
-}
+EXTENSION_PATHS = ["core", "commands"]
+IGNORED_FILES = ["__init__.py", "valor.py"]
+DISABLED_EXTS = os.getenv("DISABLED_EXTS", "").split(",")
 
-conn_args = {
-    "host": os.getenv("DBHOST"),
-    "user": os.getenv("DBUSER"),
-    "password": os.getenv("DBPASS"),
-    "db": os.getenv("DBNAME"),
-}
+
+async def load_extensions(valor: Valor, logger: logging.Logger):
+    for path in EXTENSION_PATHS:
+        for python_file in [name for name in os.listdir(path) if name.endswith(".py") and name not in IGNORED_FILES]:
+            extension = f"{path}.{python_file.removesuffix(".py")}"
+
+            if extension in DISABLED_EXTS:
+                logger.info(f"Skipping disabled extension: {extension}")
+                continue
+
+            try:
+                await valor.load_extension(extension)
+            except ExtensionError as e:
+                if path == "core":
+                    logger.fatal(f"Critical extension did not load: {e}")
+                else:
+                    logger.error(e)
+                raise e
 
 
 async def main():
@@ -45,17 +57,15 @@ async def main():
 
     logger.info("Starting bot")
 
-    async with ValorRequest() as request:
+    intents = discord.Intents.default()
 
-        intents = discord.Intents.default()
-        async with Valor(
-            commands.when_mentioned,
-            extensions=EXTENSIONS,
-            request=request,
-            testing_guild=TEST_GUILD,
-            intents=intents,
-        ) as valor:
-            await valor.start(BOT_TOKEN)
+    async with Valor(
+        commands.when_mentioned,
+        testing_guild=TEST_GUILD,
+        intents=intents,
+    ) as valor:
+        await load_extensions(valor, logger)
+        await valor.start(BOT_TOKEN)
 
 
 asyncio.run(main())

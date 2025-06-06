@@ -1,6 +1,10 @@
+import logging
+
 from core import Valor
 from discord import Embed
 from utils import AutoPagedEmbedView, PagedEmbedView
+
+logger = logging.getLogger(__name__)
 
 
 async def register_test_embed(valor: Valor):
@@ -32,4 +36,5 @@ async def register_test_embed(valor: Valor):
 
 
 async def setup(valor: Valor):
+    logger.info("Registering test_embed commands...")
     await register_test_embed(valor)

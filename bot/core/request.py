@@ -1,27 +1,31 @@
 import asyncio
 import logging
-from typing import Self
+from typing import TYPE_CHECKING
 
 from aiohttp import ClientError, ClientSession
+
+if TYPE_CHECKING:
+    from core import Valor
 
 logger = logging.getLogger(__name__)
 
 
-class ValorRequest:
+class WynnRequest:
     def __init__(self, hostname: str = "api.wynncraft.com", ver: str = "v3"):
         self.url = f"https://{hostname}/{ver}"
         self.session: ClientSession | None = None
         self.headers = {
             "User-Agent": "valor-lite/1.0",
         }
-        self.ratelimit_remaining = 180
+        self.ratelimit_remaining = 120
         self.ratelimit_reset = 0
 
-    async def __aenter__(self) -> Self:
-        self.session = ClientSession(headers=self.headers)
-        return self
+        self.update_ratelimit({})
 
-    async def __aexit__(self, exc_type, exc_value, traceback) -> None:
+    def setup(self):
+        self.session = ClientSession(headers=self.headers)
+
+    async def unload(self):
         await self.session.close()
 
     async def get(self, endpoint: str) -> dict:
@@ -43,5 +47,16 @@ class ValorRequest:
             await asyncio.sleep(self.ratelimit_reset)
 
     def update_ratelimit(self, headers: dict) -> None:
-        self.ratelimit_remaining = int(headers.get("ratelimit-remaining", 180))
+        self.ratelimit_remaining = int(headers.get("ratelimit-remaining", 120))
         self.ratelimit_reset = int(headers.get("ratelimit-reset", 0))
+
+
+async def setup(valor: "Valor"):
+    logger.info("Loading WynnRequest...")
+    valor.request = WynnRequest()
+    valor.request.setup()
+
+
+async def teardown(valor: "Valor"):
+    logger.info("Unloading WynnRequest...")
+    await valor.request.unload()
