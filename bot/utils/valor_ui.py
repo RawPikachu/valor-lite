@@ -35,10 +35,11 @@ class PagedEmbedView(View):
 
 
 class AutoPagedEmbedView(PagedEmbedView):
-    def __init__(self, content: str, header: str | None = None, timeout: int = 600):
+    def __init__(self, content: str, header: str | None = None, codeblock_fmt: str = "isbl", timeout: int = 600):
         super().__init__([], timeout=timeout)
         self.content = content
         self.header = header
+        self.fmt = codeblock_fmt
         self.page_embeds()
 
         self.max_page = len(self.embeds) - 1
@@ -49,19 +50,28 @@ class AutoPagedEmbedView(PagedEmbedView):
         current_page = ""
         embeds = []
 
-        limit = limit - len(self.header) + 1 if self.header else limit
+        limit -= 8 + len(self.fmt)  # Code block characters
+        limit = limit - len(self.header) + 1 if self.header else limit  # Header characters
 
         for line in lines:
             if len(current_page) + len(line) <= limit:
                 current_page += line + "\n"
             else:
-                page_content = self.header + "\n" + current_page.strip() if self.header else current_page.strip()
+                page_content = (
+                    f"```{self.fmt}\n{self.header}\n{current_page.strip()}```"
+                    if self.header
+                    else f"```{self.fmt}{current_page.strip()}```"
+                )
                 embed = discord.Embed(description=page_content)
                 embeds.append(embed)
                 current_page = line + "\n"
 
         if current_page:
-            page_content = self.header + "\n" + current_page.strip() if self.header else current_page.strip()
+            page_content = (
+                f"```{self.fmt}\n{self.header}\n{current_page.strip()}```"
+                if self.header
+                else f"```{self.fmt}{current_page.strip()}```"
+            )
             embed = discord.Embed(description=page_content)
             embeds.append(embed)
 

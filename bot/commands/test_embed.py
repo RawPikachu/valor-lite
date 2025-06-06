@@ -28,9 +28,9 @@ async def register_test_embed(valor: Valor):
         await interaction.response.send_message(embed=view.embeds[0], view=view)
 
     @tree.command(name="test-auto-embed", description="Test AutoPagedEmbedView")
-    async def test_auto_embed(interaction):
+    async def test_auto_embed(interaction, header: bool):
         content = "This is a test of the AutoPagedEmbedView\n" * 100
-        view = AutoPagedEmbedView(content)
+        view = AutoPagedEmbedView(content, header="This is a header" if header else None)
 
         await interaction.response.send_message(embed=view.embeds[0], view=view)
 

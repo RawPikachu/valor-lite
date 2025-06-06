@@ -29,7 +29,7 @@ class Valor(Bot):
     async def setup_hook(self) -> None:
         if self.testing_guild:
             guild_object = discord.Object(int(self.testing_guild))
-            self.tree.copy_global_to(guild=guild_object)
+            # self.tree.copy_global_to(guild=guild_object)
             await self.tree.sync(guild=guild_object)
         else:
             await self.tree.sync()
