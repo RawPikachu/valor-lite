@@ -45,3 +45,4 @@ async def setup(valor: "Valor"):
 async def teardown(valor: "Valor"):
     logger.info("Unloading ValorSQL...")
     await valor.db.unload()
+    valor.db = None

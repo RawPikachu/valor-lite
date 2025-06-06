@@ -20,8 +20,8 @@ class Valor(Bot):
         super().__init__(*args, **kwargs)
         self.testing_guild = testing_guild
 
-        self.request: "WynnRequest"
-        self.db: "ValorSQL"
+        self.request: "WynnRequest" | None
+        self.db: "ValorSQL" | None
 
     async def on_ready(self) -> None:
         logger.info(f"Logged in as {self.user} | {self.user.id}")

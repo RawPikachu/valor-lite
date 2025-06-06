@@ -60,3 +60,4 @@ async def setup(valor: "Valor"):
 async def teardown(valor: "Valor"):
     logger.info("Unloading WynnRequest...")
     await valor.request.unload()
+    valor.request = None
